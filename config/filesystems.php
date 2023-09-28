@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => 'do_spaces',
+    'default' => 'public',
 
     /*
     |--------------------------------------------------------------------------
@@ -63,6 +63,10 @@ return [
             'region' => 'sfo3', // substitua pela sua região
             'bucket' => 'profissionaliza-space',
             'endpoint' => 'https://sfo3.digitaloceanspaces.com',
+        ],
+        'temp_uploads' => [
+            'driver' => 'local', // Use o driver local para armazenamento temporário
+            'root' => storage_path('app/temp_uploads'), // Caminho onde os arquivos temporários serão armazenados
         ],
 
     ],

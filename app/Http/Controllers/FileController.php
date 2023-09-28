@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\UploadFileToDigitalOcean;
+use App\Jobs\UploadProcess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,8 +19,18 @@ class FileController extends Controller
 
     public function upload(Request $request)
     {
+        
         $file = $request->file('file');
-        Storage::disk('do_spaces')->put($file->getClientOriginalName(), file_get_contents($file)); // Faz o upload do arquivo para o espaço
+        
+        // Armazene temporariamente o arquivo em disco
+        Storage::disk('temp_uploads')->put($file->getClientOriginalName(), file_get_contents($file)); // Faz o upload do arquivo para o espaço
+        $tempFilePath = Storage::disk('temp_uploads')->path($file->getClientOriginalName());
+
+        $name = $file->getClientOriginalName();
+
+        UploadProcess::dispatch($name, $tempFilePath);
+
+        
         return redirect()->route('files.index')->with('success', 'Arquivo enviado com sucesso!');
     }
 

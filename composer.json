@@ -11,9 +11,10 @@
         "laravel/framework": "^10.10",
         "laravel/jetstream": "^4.0",
         "laravel/sanctum": "^3.2",
+        "laravel/telescope": "^4.16",
         "laravel/tinker": "^2.8",
         "league/flysystem": "^3.0",
-        "league/flysystem-aws-s3-v3": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.16",
         "livewire/livewire": "^3.0"
     },
     "require-dev": {
