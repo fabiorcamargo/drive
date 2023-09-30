@@ -1,51 +1,210 @@
+<style>
 
-
+</style>
 
 <x-app-layout>
+    <div class="container mx-auto pt-8 ">
+        <div class="card w-full bg-base-100 shadow-xl">
+            {{--<figure class="pt-8 "><img class=' w-24 ' src="{{asset('Logo Vetorial.svg')}}" alt="logo" /></figure>--}}
+            <div class="card-body">
+                <h2 class="card-title">Gerenciamento de arquivos!</h2>
+                {{--<p>If a dog chews shoes whose shoes does he choose?</p>--}}
+                <div class="overflow-x-auto">
+                    <table class="table">
+                        <!-- head -->
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Status</th>
+                                {{--<th>Favorite Color</th>--}}
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($files as $file)
+                            <!-- rows -->
+                            <input type="checkbox" id="my_modal{{ $file->name }}" class="modal-toggle" />
+                            {{--<div class="modal">
+                                <div class="modal-box">
+                                    <video id="do-video{{ $file->name }}" controls></video>
+                                </div>
+                                <label class="modal-backdrop" for="my_modal{{ $file->name }}" onclick="pauseVideo('{{ $file->name }}')">Close</label>
+                            </div>--}}
+                            <tr>
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <div>
+                                            <div class="font-bold">{{ $file->name }}</div>
 
-<div class="container mx-auto pt-8 ">
-    <h1 class="text-2xl font-semibold text-gray-500 dark:text-gray-400  focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700">Gerenciamento de Arquivos</h1>
+                                            {{--<div class="text-sm opacity-50">United States</div>--}}
+                                        </div>
+                                    </div>
+                                </td>
+                                {{--<td>
+                                    <article class="prose">
+                                        <p>
+                                            But a recent study shows that the celebrated appetizer may be linked to a
+                                            series of rabies cases
+                                            springing up around the country.
+                                        </p>
+                                        <!-- ... -->
+                                    </article>
+                                </td>--}}
+                                <td>
+                                    @if($file->status == 'Pendente')
+                                    <div class="badge badge-warning badge-outline">{{$file->status}}</div>
+                                    @elseif($file->status == 'Concluído')
+                                    <div class="badge badge-success badge-outline">{{$file->status}}</div>
+                                    @endif
+                                </td>
+                                <th>
+                                    <div class="join">
+                                        {{--<div class="join-item tooltip" data-tip="Reproduzir">
+                                            <label for="my_modal{{ $file->name }}" class="btn btn-square btn-success" onclick="loadVideo('{{ $file->name }}')">
+                                                <x-feathericon-play-circle />
+                                            </label>
+                                        </div>--}}
+                                        <div class="join-item tooltip" data-tip="Download">
+                                            <a href="{{ route('files.download', $file->name) }}"
+                                                class="btn btn-square btn-info">
+                                                <x-feathericon-download-cloud />
+                                            </a>
+                                        </div>
 
-    @if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-    @endif
+                                        <div class="join-item tooltip" data-tip="Excluir">
+                                            <form action="{{ route('files.delete', ['id' => $file->id, 'name' => $file->name]) }}" method="POST"
+                                                class="inline-block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-square btn-error">
+                                                    <x-feathericon-x />
+                                                </button>
+                                            </form>
+                                        </div>
 
-    <h3 class="mt-4 text-xl font-semibold text-gray-500 dark:text-gray-400  focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700">Lista de Arquivos:</h3>
-    <table class="w-full border-collapse border border-gray-400 mt-2">
-        <thead>
-            <tr>
-                <th class="p-2 border border-gray-400 text-gray-500 dark:text-gray-400  focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700">Nome do Arquivo</th>
-                <th class="p-2 border border-gray-400 text-gray-500 dark:text-gray-400  focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($files as $file)
-            <tr>
-                <td class="p-2 border border-gray-400 text-gray-500 dark:text-gray-400  focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700">{{ $file }}</td>
-                <td class="p-2 border border-gray-400">
-                    <a href="{{ route('files.download', $file) }}" class="text-blue-600 hover:underline text-gray-500 dark:text-gray-400  focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700">Download</a>
-                    <form action="{{ route('files.delete', $file) }}" method="POST" class="inline-block">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:underline">Excluir</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                                    </div>
+                                </th>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <form id='upload' action="{{ route('files.upload') }}" method="POST" enctype="multipart/form-data"
+                    class="mt-2">
+                    @csrf
 
-    <h3 class="mt-4 text-xl font-semibold text-gray-500 dark:text-gray-400  focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700">Enviar Arquivo:</h3>
-    <form action="{{ route('files.upload') }}" method="POST" enctype="multipart/form-data" class="mt-2">
-        @csrf
-        <div class="mb-4">
-            <input type="file" name="file" class="py-2 px-3 border border-gray-400 rounded w-full text-gray-500 dark:text-gray-400  focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700">
+                    <div class="join flex justify-between pt-8">
+                        <div class="card-body">
+                            <div id="upload-container" class="text-center">
+                                <input type="file" id="browseFile" name="file"
+                                class="file-input file-input-bordered file-input-primary w-full max-w-lg " />
+                            </div>
+                                <progress class="progress progress-secondary w-full" value="0" max="100"></progress>
+                                <div class="radial-progress" style="--value:0; --size:12rem; --thickness: 2rem;">0%</div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
         </div>
-        <button type="submit" class="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded">Enviar</button>
-    </form>
-</div>
+    </div>
+
+
+
+    <!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+<!-- Bootstrap JS Bundle with Popper -->
+<!-- Resumable JS -->
+<script src="https://cdn.jsdelivr.net/npm/resumablejs@1.1.0/resumable.min.js"></script>
+
+<script type="text/javascript">
+    let browseFile = $('#browseFile');
+    let progressElement = $('.progress'); // Selecionar o elemento <progress>
+
+    let resumable = new Resumable({
+        target: '{{ route('files.upload.large') }}',
+        query:{_token:'{{ csrf_token() }}'},
+        fileType: ['mp4'],
+        headers: {
+            'Accept' : 'application/json'
+        },
+        testChunks: false,
+        throttleProgressCallbacks: 1,
+    });
+
+    resumable.assignBrowse(browseFile[0]);
+
+    resumable.on('fileAdded', function (file) {
+        showProgress();
+        resumable.upload();
+    });
+
+    resumable.on('fileProgress', function (file) {
+        let progressValue = Math.floor(file.progress() * 100); // Obter o valor do progresso
+        updateProgress(progressValue); // Atualizar o elemento <progress>
+    });
+
+    resumable.on('fileSuccess', function (file, response) {
+        response = JSON.parse(response);
+
+
+        // Recarregar a página após um breve atraso (por exemplo, 2 segundos)
+        setTimeout(function() {
+            location.reload();
+        }, 5000); // 2000 milissegundos (2 segundos)
+    });
+
+    resumable.on('fileError', function (file, response) {
+        alert('Erro ao fazer upload do arquivo.');
+    });
+
+    function showProgress() {
+        progressElement.find('.radial-progress').css('width', '0%');
+        progressElement.find('.radial-progress').html('0%');
+        progressElement.find('.radial-progress').removeClass('bg-success');
+        progressElement.show();
+    }
+
+    function updateProgress(value) {
+        progressElement.find('.radial-progress').css('width', `${value}%`);
+        progressElement.find('.radial-progress').html(`${value}%`);
+
+        // Atualize o valor do atributo 'value' do elemento <progress>
+        progressElement.attr('value', value);
+    }
+
+    function hideProgress() {
+        progressElement.hide();
+    }
 
     
+</script>
+
+<script type="text/javascript">
+    // Verifica se a mensagem 'reload' está definida
+    @if(session('reload'))
+        setTimeout(function () {
+            location.reload(); // Recarrega a página
+        }, 5000); // 5000 milissegundos (5 segundos)
+    @endif
+</script>
+
+   {{--}} <script>
+            function loadVideo(fileName) {
+
+                
+                const videoElement = document.getElementById(`do-video${fileName}`);
+                const videoSource = `{{ route('stream.video', ['video' => '']) }}/${fileName}`; // Note que incluímos um espaço vazio para o parâmetro
+
+                videoElement.setAttribute('src', videoSource);
+                videoElement.load(); // Carrega o vídeo
+                videoElement.play(); // Inicia a reprodução
+            }
+
+            function pauseVideo(fileName) {
+                const videoElement = document.getElementById(`do-video${fileName}`);
+                videoElement.pause(); // Pausa a reprodução
+            }
+    </script>--}}
 </x-app-layout>
+

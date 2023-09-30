@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Events\UploadConcluido;
+use App\Models\Files;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,12 +21,14 @@ class UploadProcess implements ShouldQueue
      */
     protected $name;
     protected $tempFilePath;
-    
+    protected $fileid;
+    public $timeout = 10200;
 
-    public function __construct($name, $tempFilePath)
+    public function __construct($name, $tempFilePath, $fileid)
     {
         $this->tempFilePath = $tempFilePath;
         $this->name = $name;
+        $this->fileid = $fileid;
     }
 
     /**
@@ -41,9 +44,13 @@ class UploadProcess implements ShouldQueue
          // ...
          Storage::disk('do_spaces')->put($name, file_get_contents($tempFilePath));
  
+         $files = Files::find($this->fileid->id);
+         $files->update(['status' => 'Concluído']);
          // Limpe o arquivo temporário quando o processamento estiver concluído
-         Storage::delete($tempFilePath);
+         
 
+         Storage::disk('temp_uploads')->delete($name);
+         
          event(new UploadConcluido($this));
     }
 }

@@ -58,11 +58,11 @@ return [
 
         'do_spaces' => [
             'driver' => 's3',
-            'key' => 'DO004KZKKPQNLZFU6TMZ',
-            'secret' => 'C1eXo5oEcMSlFVJ98LyKqp2DToA8J8HxA4wpzmED1wo',
-            'region' => 'sfo3', // substitua pela sua região
-            'bucket' => 'profissionaliza-space',
-            'endpoint' => 'https://sfo3.digitaloceanspaces.com',
+            'key' => env('DO_KEY'),
+            'secret' => env('DO_SECRET'),
+            'region' => env('DO_REGION'),
+            'bucket' => env('DO_BUCKET'),
+            'endpoint' => env('DO_ENDPOINT'),
         ],
         'temp_uploads' => [
             'driver' => 'local', // Use o driver local para armazenamento temporário

@@ -1,7 +1,13 @@
 <?php
 
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\UploadController;
+use App\Http\Controllers\VideoController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -20,8 +26,10 @@ Route::get('/', function () {
 
 Route::get('/files', [FileController::class, 'index'])->name('files.index');
 Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
-Route::delete('/files/{id}', [FileController::class, 'delete'])->name('files.delete');
+Route::delete('/files/{id}/{name}', [FileController::class, 'delete'])->name('files.delete');
 Route::get('/files/download/{filename}', [FileController::class, 'download'])->name('files.download');
+Route::post('file-upload/upload-large-files', [FileUploadController::class, 'uploadLargeFiles'])->name('files.upload.large');
+Route::get('stream-video', [VideoController::class, 'streamVideo'])->name('stream.video');
 
 Route::middleware([
     'auth:sanctum',

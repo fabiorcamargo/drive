@@ -63,6 +63,8 @@ return [
         // Features::api(),
         Features::teams(['invitations' => true]),
         Features::accountDeletion(),
+        'html' => 'dark:data-theme="dark"',
+        'html' => 'light:data-theme="light"',
     ],
 
     /*

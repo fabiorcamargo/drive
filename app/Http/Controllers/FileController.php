@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\DeleteProcess;
 use App\Jobs\UploadFileToDigitalOcean;
 use App\Jobs\UploadProcess;
+use App\Models\Files;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
     public function index()
     {
-        $files = Storage::disk('do_spaces')->files('/'); // Obtém a lista de arquivos no espaço
-
-        //dd($files);
-        return view('files.index', compact('files'));
+        $files = Files::all();
+        
+    return view('files.index', compact('files'));
     }
 
     public function upload(Request $request)
@@ -30,19 +32,49 @@ class FileController extends Controller
 
         UploadProcess::dispatch($name, $tempFilePath);
 
-        
-        return redirect()->route('files.index')->with('success', 'Arquivo enviado com sucesso!');
+        $request->session()->flash('flash.banner', 'Enviando... Tempo médio de upload 2min, após esse tempo atualize a página para vê-lo!');
+        return redirect()->route('files.index');
     }
 
     public function download($filename)
     {
         $file = Storage::disk('do_spaces')->path($filename);
-        return Storage::download($filename);
+        return Storage::disk('do_spaces')->download($file);
     }
 
-    public function delete($filename)
+    public function delete($id, $name, Request $request)
     {
-        Storage::disk('do_spaces')->delete($filename); // Exclui o arquivo do espaço
-        return redirect()->route('files.index')->with('success', 'Arquivo excluído com sucesso!');
+
+
+        //dd($id, $name);
+        //Storage::disk('do_spaces')->delete($filename); // Exclui o arquivo do espaço
+        dispatch(new DeleteProcess($id, $name));
+        $request->session()->flash('flash.banner', 'Arquivo enviado para fila de exclusão!');
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('reload', true);
+        return redirect()->route('files.index');
+    }
+
+    public function stream(Request $request)
+    {
+        //dd($request->all());
+        $videoPath = $request->video; // Caminho do vídeo no armazenamento
+    
+        $disk = Storage::disk('do_spaces'); // Use o nome do disco configurado para o DigitalOcean Space
+    
+        if ($disk->exists($videoPath)) {
+            $stream = $disk->readStream($videoPath);
+    
+            // Lê todo o conteúdo do stream em uma string
+            $contents = stream_get_contents($stream);
+    
+            fclose($stream); // Fecha o stream
+    
+            return new Response($contents, 200, [
+                'Content-Type' => $disk->mimeType($videoPath),
+            ]);
+        } else {
+            abort(404);
+        }
     }
 }
