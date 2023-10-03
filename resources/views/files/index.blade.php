@@ -1,6 +1,6 @@
+<script src="{{ asset('js/jquery.min.js') }}"></script>
+<script src="{{ asset('js/resumable.js') }}"></script>
 <x-app-layout>
-    <script src="{{ asset('js/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/resumable.js') }}"></script>
     <div class="container mx-auto pt-8 ">
         <div class="card w-full bg-base-100 shadow-xl">
             {{--<figure class="pt-8 "><img class=' w-24 ' src="{{asset('Logo Vetorial.svg')}}" alt="logo" /></figure>--}}
@@ -228,6 +228,7 @@
    <script>
             function loadVideo(fileName) {
 
+                
                 const videoElement = document.getElementById(`do-video${fileName}`);
                 const videoSource = `{{ route('stream.video', ['video' => '']) }}/${fileName}`; // Note que incluímos um espaço vazio para o parâmetro
 
@@ -242,4 +243,3 @@
             }
     </script>
 </x-app-layout>
-
