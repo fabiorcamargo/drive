@@ -1,4 +1,3 @@
-
 <x-app-layout>
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/resumable.js') }}"></script>
