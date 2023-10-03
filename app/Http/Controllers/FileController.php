@@ -36,11 +36,11 @@ class FileController extends Controller
         return redirect()->route('files.index');
     }
 
-    public function download($filename)
+    public function download(Request $request)
     {
+        //dd($request->all());
         
-        
-        return Storage::disk('public')->download($filename);
+        return Storage::disk('public')->download($request->filename);
     }
 
     public function delete($id, $name, Request $request)

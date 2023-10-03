@@ -45,7 +45,7 @@ Route::middleware([
 
     Route::get('/files', [FileController::class, 'index'])->name('files.index');
     Route::delete('/files/{id}/{name}', [FileController::class, 'delete'])->name('files.delete');
-    Route::get('/files/download/{filename}', [FileController::class, 'download'])->name('files.download');
+    Route::post('/files/download', [FileController::class, 'download'])->name('files.download');
     Route::get('stream-video', [VideoController::class, 'streamVideo'])->name('stream.video');
     Route::post('upload', [UploadController::class, 'store'])->name('upload.store');
 });

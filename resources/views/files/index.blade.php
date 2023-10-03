@@ -68,10 +68,13 @@
                                             </label>
                                         </div>
                                         <div class="join-item tooltip" data-tip="Download">
-                                            <a href="{{ route('files.download', $file->name) }}"
-                                                class="btn btn-square btn-info">
-                                                <x-feathericon-download-cloud />
-                                            </a>
+                                            <form action="{{ route('files.download', ['filename' => $file->name]) }}" method="POST"
+                                                class="inline-block">
+                                                @csrf
+                                                <button type="submit" class="btn btn-square btn-info">
+                                                    <x-feathericon-download-cloud  />
+                                                </button>
+                                            </form>
                                         </div>
 
                                         <div class="join-item tooltip" data-tip="Excluir">
