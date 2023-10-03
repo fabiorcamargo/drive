@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\S3Upload;
-
+use Livewire\Livewire;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +32,9 @@ Route::get('/', function () {
 //Route::get('upload', [UploadController::class, 'index'])->name('upload.index');
 
 
-
+Livewire::setUpdateRoute(function ($handle) {
+    return Route::post('/livewire/update', $handle);
+});
 
 Route::middleware([
     'auth:sanctum',
