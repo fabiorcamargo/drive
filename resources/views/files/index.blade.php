@@ -26,7 +26,7 @@
                             <div class="modal">
                                 <div class="modal-box">
                                     @if(Str::contains($file->type, 'video'))
-                                    <video id="do-video{{ $file->name }}" src="/storage/{{$file->name}}" controls></video>
+                                    <video id="do-video{{ $file->name }}" src="/storage/{{$file->name}}" controls preload="none"></video>
                                     
                                     @elseif(Str::contains($file->type, 'image'))
                                     <img id="imagePreview{{ $file->name }}" src="/storage/{{$file->name}}" alt="img"/>
@@ -229,7 +229,6 @@
    <script>
             function loadVideo(fileName) {
 
-                
                 const videoElement = document.getElementById(`do-video${fileName}`);
                 const videoSource = `{{ route('stream.video', ['video' => '']) }}/${fileName}`; // Note que incluímos um espaço vazio para o parâmetro
 

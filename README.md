@@ -64,3 +64,12 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Com Nginx
+Logo antes do bloco de localização que define seus cabeçalhos personalizados, adicione este, o que impedirá que o Nginx interfira neste local específico.
+
+location = /livewire/livewire.js {
+    expires off;
+    try_files $uri $uri/ /index.php?$query_string;
+}
