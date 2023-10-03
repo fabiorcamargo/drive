@@ -1,7 +1,5 @@
-<style>
-
-</style>
-
+<script src="{{ asset('js/jquery.min.js') }}"></script>
+<script src="{{ asset('js/resumable.js') }}"></script>
 <x-app-layout>
     <div class="container mx-auto pt-8 ">
         <div class="card w-full bg-base-100 shadow-xl">
@@ -24,12 +22,17 @@
                             @foreach ($files as $file)
                             <!-- rows -->
                             <input type="checkbox" id="my_modal{{ $file->name }}" class="modal-toggle" />
-                            {{--<div class="modal">
+                            <div class="modal">
                                 <div class="modal-box">
-                                    <video id="do-video{{ $file->name }}" controls></video>
+                                    @if(Str::contains($file->type, 'video'))
+                                    <video id="do-video{{ $file->name }}" src="/storage/{{$file->name}}" controls></video>
+                                    
+                                    @elseif(Str::contains($file->type, 'image'))
+                                    <img id="imagePreview{{ $file->name }}" src="/storage/{{$file->name}}" alt="img"/>
+                                    @endif
                                 </div>
-                                <label class="modal-backdrop" for="my_modal{{ $file->name }}" onclick="pauseVideo('{{ $file->name }}')">Close</label>
-                            </div>--}}
+                                <label class="modal-backdrop" for="my_modal{{ $file->name }}" @if(Str::contains($file->type, 'video')) onclick="pauseVideo('{{ $file->name }}')" @endif>Close</label>
+                            </div>
                             <tr>
                                 <td>
                                     <div class="flex items-center space-x-3">
@@ -59,11 +62,11 @@
                                 </td>
                                 <th>
                                     <div class="join">
-                                        {{--<div class="join-item tooltip" data-tip="Reproduzir">
-                                            <label for="my_modal{{ $file->name }}" class="btn btn-square btn-success" onclick="loadVideo('{{ $file->name }}')">
+                                        <div class="join-item tooltip" data-tip="Reproduzir">
+                                            <label for="my_modal{{ $file->name }}" class="btn btn-square btn-success"  @if(Str::contains($file->type, 'video')) onclick="loadVideo('{{ $file->name }}')" @endif>
                                                 <x-feathericon-play-circle />
                                             </label>
-                                        </div>--}}
+                                        </div>
                                         <div class="join-item tooltip" data-tip="Download">
                                             <a href="{{ route('files.download', $file->name) }}"
                                                 class="btn btn-square btn-info">
@@ -89,96 +92,129 @@
                         </tbody>
                     </table>
                 </div>
-                <form id='upload' action="{{ route('files.upload') }}" method="POST" enctype="multipart/form-data"
-                    class="mt-2">
-                    @csrf
+               
 
-                    <div class="join flex justify-between pt-8">
-                        <div class="card-body">
-                            <div id="upload-container" class="text-center">
-                                <input type="file" id="browseFile" name="file"
-                                class="file-input file-input-bordered file-input-primary w-full max-w-lg " />
+            </div>
+            <div class="container pt-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header text-center">
                             </div>
-                                <progress class="progress progress-secondary w-full" value="0" max="100"></progress>
-                                <div class="radial-progress" style="--value:0; --size:12rem; --thickness: 2rem;">0%</div>
+            
+                            <div class="card-body">
+                                <div id="upload-container" class="text-center">
+                                    <button id="browseFile" class="btn btn-primary">Escolher Arquivo</button>
+                                </div>
+                                <div style="display: none" class="progress mt-3" style="height: 25px">
+                                    <progress class="progress progress-primary w-full" value="80" max="100"></progress>
+                                    
+                                </div>
+                                <div class="text-center" >
+                                <span class="badge text" style="display: none">0%</span>
+                            </div>
+                            </div>
+            
+                            {{--<div class="card-footer p-4" style="display: none">
+                                <img id="imagePreview" src="" style="width: 100%; height: auto; display: none" alt="img"/>
+                                <video id="videoPreview" src="" controls style="width: 100%; height: auto; display: none"></video>
+                            </div>--}}
                         </div>
                     </div>
-                </form>
-
+                </div>
             </div>
         </div>
     </div>
 
+    <script type="text/javascript">
+        let browseFile = $('#browseFile');
+        let resumable = new Resumable({
+            target: "{{ route('upload.store') }}",
+            query: {_token: '{{ csrf_token() }}'},
+            fileType: ['png', 'jpg', 'jpeg', 'mp4'],
+            chunkSize: 10 * 1024 * 1024, // default is 1*1024*1024, this should be less than your maximum limit in php.ini
+            headers: {
+                'Accept': 'application/json'
+            },
+            testChunks: false,
+            throttleProgressCallbacks: 1,
+        });
+    
+        resumable.assignBrowse(browseFile[0]);
+    
+        resumable.on('fileAdded', function (file) { // trigger when file picked
+            showProgress();
+            resumable.upload() // to actually start uploading.
+        });
+    
+        resumable.on('fileProgress', function (file) { // trigger when file progress update
+            updateProgress(Math.floor(file.progress() * 100));
+        });
+    
+        resumable.on('fileSuccess', function (file, response) { // trigger when file upload complete
+            response = JSON.parse(response)
+    
+            /*console.log(response);
+            if (response.mime_type.includes("image")) {
+                $('#imagePreview').attr('src', response.path + '/' + response.name).show();
+            }
+    
+            if (response.mime_type.includes("video")) {
+                $('#videoPreview').attr('src', response.path + '/' + response.name).show();
+            }*/
 
+            /*$(document).ready(function() {
 
-    <!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
-<!-- Bootstrap JS Bundle with Popper -->
-<!-- Resumable JS -->
-<script src="https://cdn.jsdelivr.net/npm/resumablejs@1.1.0/resumable.min.js"></script>
-
-<script type="text/javascript">
-    let browseFile = $('#browseFile');
-    let progressElement = $('.progress'); // Selecionar o elemento <progress>
-
-    let resumable = new Resumable({
-        target: '{{ route('files.upload.large') }}',
-        query:{_token:'{{ csrf_token() }}'},
-        fileType: ['mp4'],
-        headers: {
-            'Accept' : 'application/json'
-        },
-        testChunks: false,
-        throttleProgressCallbacks: 1,
-    });
-
-    resumable.assignBrowse(browseFile[0]);
-
-    resumable.on('fileAdded', function (file) {
-        showProgress();
-        resumable.upload();
-    });
-
-    resumable.on('fileProgress', function (file) {
-        let progressValue = Math.floor(file.progress() * 100); // Obter o valor do progresso
-        updateProgress(progressValue); // Atualizar o elemento <progress>
-    });
-
-    resumable.on('fileSuccess', function (file, response) {
-        response = JSON.parse(response);
-
-
-        // Recarregar a página após um breve atraso (por exemplo, 2 segundos)
-        setTimeout(function() {
-            location.reload();
-        }, 5000); // 2000 milissegundos (2 segundos)
-    });
-
-    resumable.on('fileError', function (file, response) {
-        alert('Erro ao fazer upload do arquivo.');
-    });
-
-    function showProgress() {
-        progressElement.find('.radial-progress').css('width', '0%');
-        progressElement.find('.radial-progress').html('0%');
-        progressElement.find('.radial-progress').removeClass('bg-success');
-        progressElement.show();
-    }
-
-    function updateProgress(value) {
-        progressElement.find('.radial-progress').css('width', `${value}%`);
-        progressElement.find('.radial-progress').html(`${value}%`);
-
-        // Atualize o valor do atributo 'value' do elemento <progress>
-        progressElement.attr('value', value);
-    }
-
-    function hideProgress() {
-        progressElement.hide();
-    }
+                $.ajax({
+                    url: '/teste/' + encodeURIComponent(response.name),
+                    type: 'GET',
+                    success: function(data) {
+                        // Manipule a resposta da rota aqui
+                        console.log('Resposta da rota:', data);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Erro na requisição:', error);
+                    }
+                });
+            });*/
+    
+            $('.card-footer').show();
+        });
+    
+        resumable.on('fileError', function (file, response) { // trigger when there is any error
+            alert('file uploading error.')
+        });
+    
+        let progress = $('.progress');
+        var progressBar = $("div.progress progress");
+        var spanElement = $("span.badge.text");
 
     
-</script>
+        function showProgress() {
+            progress.find('.progress-bar').html('0%');
+            progress.find('.progress-bar').removeClass('bg-success');
+            spanElement.show();
+            progress.show();
+        }
+    
+        function updateProgress(value) {
+            spanElement.text(`${value}%`); // Substitua "50%" pelo texto desejado
+            progressBar.attr("value", value); // Substitua 50 pelo valor desejado
+    
+            if (value === 100) {
+                progressBar.addClass('progress-success');
+                spanElement.text('Concluído');
+                spanElement.addClass('badge-accent badge-outline');
+                setTimeout(function () {
+                    location.reload(); // Recarrega a página
+                }, 3000); // 5000 milissegundos (5 segundos)
+            }
+        }
+    
+        function hideProgress() {
+            progress.hide();
+        }
+    </script>
 
 <script type="text/javascript">
     // Verifica se a mensagem 'reload' está definida
@@ -189,7 +225,7 @@
     @endif
 </script>
 
-   {{--}} <script>
+   <script>
             function loadVideo(fileName) {
 
                 
@@ -205,6 +241,6 @@
                 const videoElement = document.getElementById(`do-video${fileName}`);
                 videoElement.pause(); // Pausa a reprodução
             }
-    </script>--}}
+    </script>
 </x-app-layout>
 

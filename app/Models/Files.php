@@ -12,5 +12,6 @@ class Files extends Model
     protected $fillable = [
         'name',
         'status',
+        'type',
     ];
 }

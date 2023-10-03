@@ -35,7 +35,6 @@ class DeleteProcess implements ShouldQueue
 
          // Faça o upload do arquivo para o armazenamento em nuvem ou realize qualquer outra operação necessária
          // ...
-         Storage::disk('do_spaces')->delete($this->name);
  
          $files = Files::find($this->id);
          $files->delete();

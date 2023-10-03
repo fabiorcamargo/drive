@@ -1,47 +1,67 @@
 import Resumable from ' ../../resumablejs/resumable.js';
 
 document.addEventListener('DOMContentLoaded', function () {
-    const resumable = new Resumable({
-        target: '/upload', // Rota onde os chunks serão enviados
-        chunkSize: 10 * 1024 * 1024, // Tamanho de cada chunk (10 MB neste exemplo)
-        simultaneousUploads: 4, // Número de chunks enviados simultaneamente
-        fileParameterName: 'file', // Nome do campo que contém o arquivo
-        query: {
-            _token: 'seu-token-csrf', // Token CSRF, se necessário
+    let browseFile = $('#browseFile');
+    let resumable = new Resumable({
+        target: "{{ route('upload.store') }}",
+        query: {_token: '{{ csrf_token() }}'},
+        fileType: ['png', 'jpg', 'jpeg', 'mp4'],
+        chunkSize: 10 * 1024 * 1024, // default is 1*1024*1024, this should be less than your maximum limit in php.ini
+        headers: {
+            'Accept': 'application/json'
         },
+        testChunks: false,
+        throttleProgressCallbacks: 1,
     });
 
-    // Evento para adicionar um arquivo ao Resumable.js
-    resumable.assignBrowse(document.getElementById('fileInput'));
+    resumable.assignBrowse(browseFile[0]);
 
-    // Evento para quando um arquivo é adicionado
-    resumable.on('fileAdded', function (file) {
-        // Adicione o arquivo à lista de uploads pendentes
-        // Exiba informações sobre o arquivo, como nome e tamanho
+    resumable.on('fileAdded', function (file) { // trigger when file picked
+        showProgress();
+        resumable.upload() // to actually start uploading.
     });
 
-    // Evento para atualizar o progresso do upload
-    resumable.on('fileProgress', function (file) {
-        // Atualize a barra de progresso ou exiba informações sobre o progresso
+    resumable.on('fileProgress', function (file) { // trigger when file progress update
+        updateProgress(Math.floor(file.progress() * 100));
     });
 
-    // Evento para quando o upload de um arquivo é concluído
-    resumable.on('fileSuccess', function (file, message) {
-        // O upload do arquivo foi bem-sucedido
+    resumable.on('fileSuccess', function (file, response) { // trigger when file upload complete
+        response = JSON.parse(response)
+
+        if (response.mime_type.includes("image")) {
+            $('#imagePreview').attr('src', response.path + '/' + response.name).show();
+        }
+
+        if (response.mime_type.includes("video")) {
+            $('#videoPreview').attr('src', response.path + '/' + response.name).show();
+        }
+
+        $('.card-footer').show();
     });
 
-    // Evento para lidar com erros de upload
-    resumable.on('fileError', function (file, message) {
-        // Ocorreu um erro durante o upload
+    resumable.on('fileError', function (file, response) { // trigger when there is any error
+        alert('file uploading error.')
     });
 
-    // Evento para quando todos os uploads são concluídos
-    resumable.on('complete', function () {
-        // Todos os uploads foram concluídos com sucesso
-    });
+    let progress = $('.progress');
 
-    // Inicie o upload manualmente (por exemplo, quando o usuário pressiona um botão)
-    document.getElementById('startUploadButton').addEventListener('click', function () {
-        resumable.upload();
-    });
+    function showProgress() {
+        progress.find('.progress-bar').css('width', '0%');
+        progress.find('.progress-bar').html('0%');
+        progress.find('.progress-bar').removeClass('bg-success');
+        progress.show();
+    }
+
+    function updateProgress(value) {
+        progress.find('.progress-bar').css('width', `${value}%`)
+        progress.find('.progress-bar').html(`${value}%`)
+
+        if (value === 100) {
+            progress.find('.progress-bar').addClass('bg-success');
+        }
+    }
+
+    function hideProgress() {
+        progress.hide();
+    }
 });

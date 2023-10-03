@@ -5,8 +5,10 @@ use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VideoController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\S3Upload;
 
 
 /*
@@ -21,15 +23,16 @@ use Illuminate\Support\Facades\Storage;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
-Route::get('/files', [FileController::class, 'index'])->name('files.index');
-Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
-Route::delete('/files/{id}/{name}', [FileController::class, 'delete'])->name('files.delete');
-Route::get('/files/download/{filename}', [FileController::class, 'download'])->name('files.download');
-Route::post('file-upload/upload-large-files', [FileUploadController::class, 'uploadLargeFiles'])->name('files.upload.large');
-Route::get('stream-video', [VideoController::class, 'streamVideo'])->name('stream.video');
+//Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
+//Route::post('file-upload/upload-large-files', [FileUploadController::class, 'uploadLargeFiles'])->name('files.upload.large');
+
+//Route::get('upload', [UploadController::class, 'index'])->name('upload.index');
+
+
+
 
 Route::middleware([
     'auth:sanctum',
@@ -39,4 +42,10 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/files', [FileController::class, 'index'])->name('files.index');
+    Route::delete('/files/{id}/{name}', [FileController::class, 'delete'])->name('files.delete');
+    Route::get('/files/download/{filename}', [FileController::class, 'download'])->name('files.download');
+    Route::get('stream-video', [VideoController::class, 'streamVideo'])->name('stream.video');
+    Route::post('upload', [UploadController::class, 'store'])->name('upload.store');
 });

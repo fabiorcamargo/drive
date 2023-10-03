@@ -11,7 +11,7 @@ class VideoController extends Controller
     {
         //dd($request->all());
         $filePath = $request->video; // Caminho para o vídeo no Space
-        $fileSize = Storage::disk('do_spaces')->size($filePath);
+        $fileSize = Storage::disk('public')->size($filePath);
 
         //dd($fileSize);
 
@@ -24,7 +24,7 @@ class VideoController extends Controller
         // Verifique se o cliente suporta intervalos de bytes (para streaming)
         if (request()->hasHeader('range')) {
             return response()->stream(function () use ($filePath) {
-                $handle = Storage::disk('do_spaces')->readStream($filePath);
+                $handle = Storage::disk('public')->readStream($filePath);
                 fpassthru($handle);
                 fclose($handle);
             }, 200, $headers);

@@ -38,8 +38,9 @@ class FileController extends Controller
 
     public function download($filename)
     {
-        $file = Storage::disk('do_spaces')->path($filename);
-        return Storage::disk('do_spaces')->download($file);
+        
+        
+        return Storage::disk('public')->download($filename);
     }
 
     public function delete($id, $name, Request $request)
@@ -47,11 +48,16 @@ class FileController extends Controller
 
 
         //dd($id, $name);
+        //dd(Storage::disk('do_spaces')->exists($name)); // Exclui o arquivo do espaço
         //Storage::disk('do_spaces')->delete($filename); // Exclui o arquivo do espaço
-        dispatch(new DeleteProcess($id, $name));
-        $request->session()->flash('flash.banner', 'Arquivo enviado para fila de exclusão!');
+        //dispatch(new DeleteProcess($id, $name));
+
+        $files = Files::find($id);
+        Storage::disk('public')->delete($files->name);
+        $files->delete();
+        $request->session()->flash('flash.banner', 'Arquivo excluído com sucesso!');
         $request->session()->flash('flash.bannerStyle', 'success');
-        $request->session()->flash('reload', true);
+        //$request->session()->flash('reload', true);
         return redirect()->route('files.index');
     }
 
