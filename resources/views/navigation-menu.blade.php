@@ -1,3 +1,4 @@
+
 <nav x-data="{ open: false }" class="bg-base-200">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,6 +20,7 @@
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">
+                @if(Auth::user()->id < 3)
                 <!-- Teams Dropdown -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
                     <div class="ml-3 relative">
@@ -69,6 +71,7 @@
                             </x-slot>
                         </x-dropdown>
                     </div>
+                @endif
                 @endif
 
                 <!-- Settings Dropdown -->
@@ -181,6 +184,7 @@
                     </x-responsive-nav-link>
                 </form>
 
+                @if(Auth::user()->id < 3)
                 <!-- Team Management -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
                     <div class="border-t border-gray-200 dark:border-gray-600"></div>
@@ -212,6 +216,7 @@
                             <x-switchable-team :team="$team" component="responsive-nav-link" />
                         @endforeach
                     @endif
+                @endif
                 @endif
             </div>
         </div>
