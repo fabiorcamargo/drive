@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\S3Upload;
-
+use App\Mail\TestMail;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,4 +49,8 @@ Route::middleware([
     Route::post('/files/download', [FileController::class, 'download'])->name('files.download');
     Route::get('stream-video', [VideoController::class, 'streamVideo'])->name('stream.video');
     Route::post('upload', [UploadController::class, 'store'])->name('upload.store');
+    Route::get('test_email', function(){
+        Mail::to('fabiorcamargo@gmail.com')
+        ->send(new TestMail());
+    });
 });
