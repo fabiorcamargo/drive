@@ -105,6 +105,23 @@ class UploadController extends Controller
         $fileName = str_replace(' ', '_', $fileName);
         // Group files by mime type
         $mime = str_replace('/', '-', $file->getMimeType());
+        $size = $file->getSize();
+
+        // Função para converter bytes em uma representação legível
+        function formatSize($size) {
+            $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            $unitIndex = 0;
+
+            while ($size >= 1024 && $unitIndex < count($units) - 1) {
+                $size /= 1024;
+                $unitIndex++;
+            }
+
+            return round($size, 2) . ' ' . $units[$unitIndex];
+        }
+
+        // Converter o tamanho do arquivo e atribuir ao modelo File
+        $fileSizeReadable = formatSize($size);
 
         // Group files by the date (week
         $dateFolder = date("Y-m-W");
@@ -117,7 +134,9 @@ class UploadController extends Controller
         // move the file name
         $file->move($finalPath, $fileName);
 
-        Files::create(['name' => $fileName, 'type' => $mime, 'status' => 'Concluído']);
+
+
+        Files::create(['name' => $fileName, 'type' => $mime, 'status' => 'Concluído', 'size' => $fileSizeReadable]);
 
         
         
@@ -127,6 +146,8 @@ class UploadController extends Controller
             'mime_type' => $mime
         ]);
     }
+
+    
 
     /**
      * Create unique filename for uploaded file

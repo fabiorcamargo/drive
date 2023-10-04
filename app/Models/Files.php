@@ -13,5 +13,6 @@ class Files extends Model
         'name',
         'status',
         'type',
+        'size',
     ];
 }

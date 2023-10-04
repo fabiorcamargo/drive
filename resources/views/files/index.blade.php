@@ -13,9 +13,11 @@
                         <thead>
                             <tr>
                                 <th>Nome</th>
+                                <th>Tamanho</th>
                                 <th>Status</th>
+
                                 {{--<th>Favorite Color</th>--}}
-                                <th></th>
+                                <th>Ação</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,7 +39,16 @@
                                 <td>
                                     <div class="flex items-center space-x-3">
                                         <div>
-                                            <div class="font-bold">{{ $file->name }}</div>
+                                            <div class="">{{ $file->name }}</div>
+
+                                            {{--<div class="text-sm opacity-50">United States</div>--}}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <div>
+                                            <div class="">{{ $file->size }}</div>
 
                                             {{--<div class="text-sm opacity-50">United States</div>--}}
                                         </div>
