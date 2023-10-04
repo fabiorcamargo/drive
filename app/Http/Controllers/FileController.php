@@ -33,7 +33,7 @@ class FileController extends Controller
         UploadProcess::dispatch($name, $tempFilePath);
 
         $request->session()->flash('flash.banner', 'Enviando... Tempo médio de upload 2min, após esse tempo atualize a página para vê-lo!');
-        return redirect()->route('files.index');
+        return redirect()->route('dashboard');
     }
 
     public function download(Request $request)
@@ -58,7 +58,7 @@ class FileController extends Controller
         $request->session()->flash('flash.banner', 'Arquivo excluído com sucesso!');
         $request->session()->flash('flash.bannerStyle', 'success');
         //$request->session()->flash('reload', true);
-        return redirect()->route('files.index');
+        return redirect()->route('dashboard');
     }
 
     public function stream(Request $request)

@@ -40,11 +40,11 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
+   /* Route::get('/dashboard', function () {
         return view('dashboard');
-    })->name('dashboard');
+    })->name('dashboard');*/
 
-    Route::get('/files', [FileController::class, 'index'])->name('files.index');
+    Route::get('/dashboard', [FileController::class, 'index'])->name('dashboard');
     Route::delete('/files/{id}/{name}', [FileController::class, 'delete'])->name('files.delete');
     Route::post('/files/download', [FileController::class, 'download'])->name('files.download');
     Route::get('stream-video', [VideoController::class, 'streamVideo'])->name('stream.video');
