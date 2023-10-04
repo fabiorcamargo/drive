@@ -28,7 +28,6 @@ class TestMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('fabiorcamargo@gmail.com'),
             subject: 'Test Mail',
         );
         
