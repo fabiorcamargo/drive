@@ -32,6 +32,8 @@ class InviteTeamMember implements InvitesTeamMembers
         $invitation = $team->teamInvitations()->create([
             'email' => $email,
             'role' => $role,
+            'token' => uniqid(),
+            'status' => 0,
         ]);
 
         Mail::to($email)->send(new TeamInvitation($invitation));

@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\Team;
+use App\Models\TeamInvitation;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -21,12 +22,15 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
+    
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
+        
+        $this->invite = $input['invite'];
 
         return DB::transaction(function () use ($input) {
             return tap(User::create([
@@ -35,6 +39,7 @@ class CreateNewUser implements CreatesNewUsers
                 'password' => Hash::make($input['password']),
             ]), function (User $user) {
                 $this->createTeam($user);
+                $this->updateInvite($this->invite, $user);
             });
         });
     }
@@ -50,4 +55,12 @@ class CreateNewUser implements CreatesNewUsers
             'personal_team' => true,
         ]));
     }
+
+    protected function updateInvite($invite, $user): void
+    {
+        $inv = TeamInvitation::find($invite);
+        $inv->status = $user->id;
+        $inv->update();
+    }
+
 }

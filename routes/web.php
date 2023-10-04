@@ -27,6 +27,11 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
+Route::get('/registro', function () {
+    
+        return view('auth.register');
+    
+})->name('registro');
 //Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
 //Route::post('file-upload/upload-large-files', [FileUploadController::class, 'uploadLargeFiles'])->name('files.upload.large');
 
