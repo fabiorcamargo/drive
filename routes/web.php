@@ -50,7 +50,7 @@ Route::middleware([
     })->name('dashboard');*/
 
     Route::get('/dashboard', [FileController::class, 'index'])->name('dashboard');
-    Route::delete('/files/{id}/{name}', [FileController::class, 'delete'])->name('files.delete');
+    Route::delete('/files', [FileController::class, 'delete'])->name('files.delete');
     Route::post('/files/download', [FileController::class, 'download'])->name('files.download');
     Route::get('stream-video', [VideoController::class, 'streamVideo'])->name('stream.video');
     Route::post('upload', [UploadController::class, 'store'])->name('upload.store');
