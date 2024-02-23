@@ -15,15 +15,15 @@ class FileController extends Controller
     public function index()
     {
         $files = Files::all();
-        
+
     return view('files.index', compact('files'));
     }
 
     public function upload(Request $request)
     {
-        
+
         $file = $request->file('file');
-        
+
         // Armazene temporariamente o arquivo em disco
         Storage::disk('temp_uploads')->put($file->getClientOriginalName(), file_get_contents($file)); // Faz o upload do arquivo para o espaço
         $tempFilePath = Storage::disk('temp_uploads')->path($file->getClientOriginalName());
@@ -39,7 +39,7 @@ class FileController extends Controller
     public function download(Request $request)
     {
         //dd($request->all());
-        
+
         return Storage::disk('public')->download($request->filename);
     }
 
@@ -63,17 +63,17 @@ class FileController extends Controller
     {
         //dd($request->all());
         $videoPath = $request->video; // Caminho do vídeo no armazenamento
-    
+
         $disk = Storage::disk('do_spaces'); // Use o nome do disco configurado para o DigitalOcean Space
-    
+
         if ($disk->exists($videoPath)) {
             $stream = $disk->readStream($videoPath);
-    
+
             // Lê todo o conteúdo do stream em uma string
             $contents = stream_get_contents($stream);
-    
+
             fclose($stream); // Fecha o stream
-    
+
             return new Response($contents, 200, [
                 'Content-Type' => $disk->mimeType($videoPath),
             ]);

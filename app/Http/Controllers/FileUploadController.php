@@ -18,7 +18,7 @@ class FileUploadController extends Controller {
     /**
      * @return Application|Factory|View
      */
-   
+
 
      public function uploadChunk(Request $request)
      {
@@ -26,43 +26,43 @@ class FileUploadController extends Controller {
          $resumableChunkNumber = $request->input('resumableChunkNumber');
          $resumableTotalChunks = $request->input('resumableTotalChunks');
          $resumableIdentifier = $request->input('resumableIdentifier');
- 
+
          $chunkPath = storage_path('/chunks' . $resumableIdentifier);
- 
+
          // Certifique-se de que o diretório de chunks exista
          if (!file_exists($chunkPath)) {
              mkdir($chunkPath, 0755, true);
          }
- 
+
          // Salve o chunk no diretório
          $resumableFile->move($chunkPath, 'part_' . $resumableChunkNumber);
- 
+
          // Verifique se todos os chunks foram recebidos
          if ($resumableChunkNumber == $resumableTotalChunks) {
              // Todos os chunks foram enviados, agora você pode recriar o arquivo original
              $finalFilePath = storage_path('app/uploads/' . $resumableIdentifier);
              $chunks = glob($chunkPath . '/part_*');
              natsort($chunks);
- 
+
              $finalFile = fopen($finalFilePath, 'w');
- 
+
              foreach ($chunks as $chunk) {
                  $chunkContent = file_get_contents($chunk);
                  fwrite($finalFile, $chunkContent);
                  unlink($chunk); // Remova o chunk após escrevê-lo no arquivo final
              }
- 
+
              fclose($finalFile);
- 
+
              // Limpe o diretório de chunks
-             rmdir($chunkPath);
- 
+             //rmdir($chunkPath);
+
              return response()->json(['success' => true]);
          }
- 
+
          return response()->json(['success' => true]);
      }
-     
+
 
     public function uploadLargeFiles(Request $request) {
         $receiver = new FileReceiver('file', $request, HandlerFactory::classFromRequest($request));
@@ -88,7 +88,7 @@ class FileUploadController extends Controller {
             //UploadProcess::dispatch($name, $tempFilePath, $fileid);
 
             unlink($file->getPathname());
-            
+
             $request->session()->flash('flash.banner', 'Arquivo enviado para fila de carregamento, atualize a página para acompanhar o status!');
             $request->session()->flash('flash.bannerStyle', 'success');
 

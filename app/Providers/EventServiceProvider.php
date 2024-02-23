@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Events\UploadConcluido;
 use App\Listeners\UploadConcluidoListener;
+use App\Models\Files;
+use App\Observers\FilesObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -23,6 +25,7 @@ class EventServiceProvider extends ServiceProvider
         UploadConcluido::class => [
             UploadConcluidoListener::class,
         ],
+
     ];
 
     /**
@@ -30,7 +33,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Files::observe(FilesObserver::class);
     }
 
     /**
