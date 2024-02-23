@@ -43,16 +43,16 @@ class FileController extends Controller
         return Storage::disk('public')->download($request->filename);
     }
 
-    public function delete($id, $name, Request $request)
+    public function delete(Request $request)
     {
 
-
+		//dd($request->all());
         //dd($id, $name);
         //dd(Storage::disk('do_spaces')->exists($name)); // Exclui o arquivo do espaço
         //Storage::disk('do_spaces')->delete($filename); // Exclui o arquivo do espaço
         //dispatch(new DeleteProcess($id, $name));
 
-        $files = Files::find($id);
+        $files = Files::find($request->id);
         Storage::disk('public')->delete($files->name);
         $files->delete();
         //$request->session()->flash('reload', true);
